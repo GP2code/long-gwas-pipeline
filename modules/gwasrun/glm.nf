@@ -7,8 +7,7 @@ process GWASGLM {
     each samplelist //from plink_samplelist
     each phenoname
   output:
-    tuple env(KEY), path("*.linear")
-    //path("*.linear")
+    tuple env(KEY), path("*.results")
 
   script:
     def covariates = "${params.covariates}".replaceAll(/ /, ",")
@@ -47,5 +46,13 @@ process GWASGLM {
             --threads ${task.cpus} \
             --memory ${task.memory.toMega()} \
             --out ${outfile}
+
+    if [ -f ${outfile}.${phenoname}.glm.logistic.hybrid ]; then
+        mv ${outfile}.${phenoname}.glm.logistic.hybrid ${outfile}.${phenoname}.results
+    fi
+    
+    if [ -f ${outfile}.${phenoname}.glm.linear ]; then
+        mv ${outfile}.${phenoname}.glm.linear ${outfile}.${phenoname}.results
+    fi
     """
 }
